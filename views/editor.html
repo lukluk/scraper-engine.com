@@ -1,0 +1,84 @@
+<!doctype html>
+<title>Scraper-engine Editor</title>
+<meta charset="utf-8"/>
+<style>
+#json{
+	height: 660px;
+	border: 1px solid #888;
+	overflow-y: scroll;
+}
+</style>
+<link rel="stylesheet" href="/bower_components/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/bower_components/codemirror/theme/monokai.css">
+<link rel="stylesheet" href="/bower_components/pure/pure-min.css">
+<link rel="stylesheet" href="/assets/css/spin.css">
+<link rel="stylesheet" href="/bower_components/jquery-jsonview/dist/jquery.jsonview.css">
+
+<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="/bower_components/codemirror/lib/codemirror.js"></script>
+<script src="/bower_components/jquery-jsonview/dist/jquery.jsonview.js"></script>
+<script src="/bower_components/codemirror/mode/javascript/javascript.js"></script>
+<script src="/bower_components/codemirror/addon/selection/active-line.js"></script>
+<script src="/bower_components/codemirror/addon/edit/matchbrackets.js"></script>
+
+<div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item pure-menu-selected"><a href="/index.html" class="pure-menu-link">Getting Started</a></li>
+        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+            <a href="#" id="menuLink1" class="pure-menu-link">Example</a>
+            <ul class="pure-menu-children">
+                <li class="pure-menu-item"><a href="/editor.html?site=houzz" class="pure-menu-link">houzz.com</a></li>
+                <li class="pure-menu-item"><a href="/editor.html?site=singlehouzz" class="pure-menu-link">houzz.com (detail mode)</a></li>							
+                <li class="pure-menu-item"><a href="/editor.html?site=mataharimall" class="pure-menu-link">mataharimall.com</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div class="pure-g">
+	<div class="pure-u-1-2">
+		<textarea id="code" name="code">{{code}}</textarea><br/>
+		<center>
+			<button id="run" class="pure-button pure-button-primary">Save + Run</button>
+		</center>
+	</div>
+	<div class="pure-u-1-2">
+		<div id="json"></div><br/>
+		<input type="text" style="width:100%" id="url"/>
+	</div>
+</div>
+
+<script>
+var api='{{api}}'
+var site='{{site}}'
+var id='{{id}}'
+
+$('#url').hide()
+var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+	lineNumbers: true,
+	styleActiveLine: true,
+	matchBrackets: true,
+	viewportMargin:80
+})
+editor.setOption("theme", 'monokai')
+function scrape(cb){
+	$.getJSON(api+'/output.json?site=users/'+site+'-'+id,function(data){
+		$('#json').JSONView(data)
+		$('#run').html('Run + Save').removeClass('pure-button-disabled')
+		$('#url').val(api+'/output.json?site=users/'+site+'-'+id).show()
+	})
+}
+function save(cb){
+	$('#url').hide()
+	$('#run').html('Running..').addClass('pure-button-disabled')
+	$('#json').html('<div class="spinner"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>')
+	$.post('/save/script/'+site+'-'+id,{code:editor.getValue()},function(data){
+		editor.setValue(data)
+		cb && cb(true)
+	})
+}
+function run(){
+	save(scrape)
+
+}
+$('#run').click(run)
+</script>
