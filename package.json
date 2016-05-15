@@ -1,0 +1,24 @@
+{
+  "name": "scraper-engine.com",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukluk/scraper-engine.com.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lukluk/scraper-engine.com/issues"
+  },
+  "homepage": "https://github.com/lukluk/scraper-engine.com#readme",
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
+    "express-session": "^1.13.0"
+  }
+}
